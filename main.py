@@ -22,16 +22,15 @@ def recognize(rec_audio):
 def listen(audio_source):
     while 1:
         audio = r.listen(audio_source)
-        command = recognize(audio)
+        #command = recognize(audio)
+        #print(command)
 
-        print(command)
-
-        # if r.recognize_wit(audio, key=WIT_AI_KEY) == trigger:
-        #     # Trigger recognized, listening to the command
-        #     recognize(audio)
-        # else:
-        #     # Voice captured, but the trigger wasn't recognized
-        #     print("Trigger not recognized")
+        if r.recognize_wit(audio, key=WIT_AI_KEY) == trigger:
+            # Trigger recognized, listening to the command
+            recognize(audio)
+        else:
+            # Voice captured, but the trigger wasn't recognized
+            print("Trigger not recognized")
 
 
 r = sr.Recognizer()
