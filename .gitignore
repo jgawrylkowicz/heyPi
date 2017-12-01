@@ -232,4 +232,11 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+
+# Idea
+.idea
+
+# mp3
+*.mp3
+
 # End of https://www.gitignore.io/api/macos,linux,python,windows,pycharm
