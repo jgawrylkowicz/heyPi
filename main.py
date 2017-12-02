@@ -4,22 +4,32 @@ import os
 import time
 import datetime
 
-trigger = "hey"
-testing = 1
+trigger = "hey"  # catchphrase
+testing = 1  # additional command prints
 
 # saving the last queries / commands for later use
+# We need some kind of dictionary to save entities of the commands.
 # log = dict()
 
 
-class Response:
-    # dict needed for generating answers
-    def __init__(self, entities):
-        self.entities = entities
+# I have split responses into subclasses. I don't know if it's a good idea or not,
+# so you are free to change it.
 
-    def generate(self):
-        response = ""
-        # return response as a string
-        return response
+class Response:
+    # A dictionary is needed for generating responses
+    def __init__(self):
+        self.time_generated = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
+
+class TimeResponse(Response):
+    def __init__(self, location):
+        Response.__init__(self)
+        self.location = location
+
+    def get_text(self):
+        if self.location is None:
+            now = datetime.datetime.now()
+            return str("It is now " + str(now.hour) + ":" + str(now.minute))
 
 
 class Capture:
@@ -35,7 +45,12 @@ class Capture:
         return self.entities
 
 
-# recognize the captured audio it via wit.ai (online)
+# Wit.ai is used for the actual language understanding. Is not only returns transcribed audio, but
+# but also the intent or keywords of the command, so-called entities, which can be configured on
+# their website.
+# e.g. "What time is it"  Entity:time
+# e.g. "What time is it in Vienna"  Entity:time, location
+
 def recognize_wit(recognizer, audio):
     if audio is not None:
         wit_ai_key = "ETJDE6YJR44VJT2X4OGDYOLQGGVIWE65"
@@ -53,7 +68,9 @@ def recognize_wit(recognizer, audio):
         say("Sorry, I didn't catch that")
 
 
-# recognize the captured audio it via sphinx (offline)
+# As mentioned in feedback I have implemented an offline recognition via Sphinx, for the sole
+# purpose to recognize the catchphrase from the audio.
+
 def recognize_sphinx(recognizer, audio):
     if audio is not None:
         try:
@@ -68,6 +85,8 @@ def recognize_sphinx(recognizer, audio):
             print("Sphinx error; {0}".format(e))
 
 
+# Provides voice feedback via Google's Text to Speech API.
+# saves the mp3 file into 'resources' dir and plays with mpg321 in cli
 def say(text):
     if text is not None:
         # TODO check if the response exists as a file
@@ -79,7 +98,9 @@ def say(text):
         print("HeyPi: " + text)
 
 
-# execute a command Object
+# Executes a 'Command' object. At this time it checks if a command contains a specific
+# string. If no entities have been found by wit.ai, the command cannot be processed.
+
 def execute(command):
 
     print("You: " + command.get_text())
@@ -88,18 +109,21 @@ def execute(command):
 
     entities = command.get_entities()
     if len(entities) == 0:
-        return "Sorry, I can't process that"
+        say("Sorry, I don't know what you mean with '" + command.get_text() + "'")
     else:
 
         keys = entities.keys()
         # example
         if "time" in keys:
-            # generate as response object later?
-            now = datetime.datetime.now()
-            say("It is now " + str(now.hour) + " " + str(now.minute))
+            response = TimeResponse(None)
+            say(response.get_text())
 
 
-# listen and capture the voice commands
+# Listening to the audio source, the microphone most likely.
+# The while loop provides an always-on functionality. Use it if you have to.
+# The recognizer instance listens to the microphone and records the audio, which is then sent to one
+# of the API
+
 def listen_from_source(recognizer, audio_source):
     # TODO use background_listening for the commands and the main thread for the catchphrase
 
@@ -109,7 +133,9 @@ def listen_from_source(recognizer, audio_source):
         # rec_audio = recognizer.listen(audio_source)
         # command = recognize_sphinx(recognizer, rec_audio)
         # print("You: " + command)
-        #
+
+        # After the catchphrase has been recognized, the program awaits a command
+
         # if trigger in command:
             # Trigger recognized, listening to the command
             say("I'm listening")
@@ -119,6 +145,8 @@ def listen_from_source(recognizer, audio_source):
             execute(command)
 
 
+# Main function. It contains the instance of speech recognition, which handles microphone settings,
+# capturing and transcribing audio.
 def init():
     rec = sr.Recognizer()
     mic = sr.Microphone()
