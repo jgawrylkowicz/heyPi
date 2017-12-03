@@ -76,13 +76,29 @@ def execute(command):
     entities = command.get_entities()
     if len(entities) == 0:
         say("Sorry, I don't know what you mean with '" + command.get_text() + "'")
-    else:
 
+    else:
         keys = entities.keys()
-        # example
-        if "time" in keys:
-            response = gen.TimeResponse(None)
-            say(response.get_text())
+        # fallback to generic response
+        response = gen.Response
+
+        if len(entities) == 1:
+
+            if "time" in keys:
+                response = gen.TimeResponse(None)
+            elif "weather" in keys:
+                response = gen.WeatherResponse(None)
+
+        elif len(entities) == 2:
+            keys = entities.keys()
+
+            if "weather" and "location" in keys:
+                response = gen.TimeResponse(None)
+
+            elif "time" and "location" in keys:
+                response = gen.TimeResponse(None)
+
+        say(response.get_text())
 
 
 # Listening to the audio source, the microphone most likely.

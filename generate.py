@@ -38,7 +38,11 @@ class WeatherResponse(Response):
 
     def __init__(self, location):
         Response.__init__(self)
-        self.location = location
+        if location is None:
+            # pull the standard location from a config file
+            self.location = "Vienna"
+        else:
+            self.location = location
 
     def get_text(self):
         # observation = current weather
