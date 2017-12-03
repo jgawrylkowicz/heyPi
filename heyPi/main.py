@@ -1,9 +1,10 @@
 import speech_recognition as sr
+from execute import Capture
+from execute import execute
+import respond as res
+import sys
 from gtts import gTTS
 import os
-import generate as gen
-import execute as ex
-import sys
 
 trigger = "hey"  # catchphrase
 testing = 1  # additional command prints
@@ -24,7 +25,7 @@ def recognize_wit(recognizer, audio):
         wit_ai_key = "ETJDE6YJR44VJT2X4OGDYOLQGGVIWE65"
         try:
             api_response = recognizer.recognize_wit(audio, key=wit_ai_key, show_all=True)
-            capt = gen.Capture(api_response.get('_text'), api_response.get('entities'))
+            capt = Capture(api_response.get('_text'), api_response.get('entities'))
 
             return capt
 
@@ -43,7 +44,7 @@ def recognize_sphinx(recognizer, audio):
     if audio is not None:
         try:
             api_response = recognizer.recognize_sphinx(audio, language="en-US")
-            capt = gen.Capture(api_response.get('_text'), "")
+            capt = Capture(api_response.get('_text'), "")
 
             return capt
 
@@ -51,6 +52,56 @@ def recognize_sphinx(recognizer, audio):
             print("Sphinx could not understand audio")
         except sr.RequestError as e:
             print("Sphinx error; {0}".format(e))
+
+
+# Listening to the audio source, the microphone most likely.
+# The while loop provides an always-on functionality. Use it if you have to.
+# The recognizer instance listens to the microphone and records the audio, which is then sent to one
+# of the API
+
+def listen_from_source(recognizer, audio_source):
+    # TODO use background_listening for the commands and the main thread for the catchphrase
+
+    # while True:
+    #    # try:
+    #         print("Waiting for catchphrase")
+    #
+    #         rec_audio = recognizer.listen(audio_source)
+    #         command = recognize_wit(recognizer, rec_audio)
+    #         print("You: " + command.get_text())
+    #
+    #         # After the catchphrase has been recognized, the program awaits a command
+    #         #command_count = 0
+    #         if trigger in command.get_text():
+                nested_command(recognizer, audio_source)
+            #else:
+        #        continue
+
+        #except AttributeError:
+          #  say("I'm sorry, try that again")
+
+
+# Nested Command is the command said by the user after the catchphrase has been accepted
+# It has been made into a separate function in case of further development
+def nested_command(recognizer, audio_source):
+
+    while True:
+        try:
+            # Trigger recognized, listening to the command
+            say("I'm listening")
+
+            rec_audio = recognizer.listen(audio_source)
+            # say("Okay, just a second..")
+            next_command = recognize_wit(recognizer, rec_audio)
+
+            if "stop" in next_command.get_text():
+                res.say("Have a nice day!")
+                sys.exit()
+            response = execute(next_command)
+            say(response)
+            # command_count += 1
+        except AttributeError:
+            say("I'm sorry, try that again")
 
 
 # Provides voice feedback via Google's Text to Speech API.
@@ -66,58 +117,6 @@ def say(text):
             print("HeyPi: " + text)
         except IOError:
             print "The response.mp3 can't be reached: No such file or directory, check the path"
-
-
-
-# Listening to the audio source, the microphone most likely.
-# The while loop provides an always-on functionality. Use it if you have to.
-# The recognizer instance listens to the microphone and records the audio, which is then sent to one
-# of the API
-
-def listen_from_source(recognizer, audio_source):
-    # TODO use background_listening for the commands and the main thread for the catchphrase
-
-
-    while True:
-        try:
-            print("Waiting for catchphrase")
-
-            rec_audio = recognizer.listen(audio_source)
-            command = recognize_wit(recognizer, rec_audio)
-            print("You: " + command.get_text())
-
-            # After the catchphrase has been recognized, the program awaits a command
-            #command_count = 0
-            if trigger in command.get_text():
-                nested_command(recognizer,audio_source)
-            else:
-                continue
-
-        except AttributeError:
-            say("I'm sorry, try that again")
-
-
-# Nested Command is the command said by the user after the catchphrase has been accepted
-# It has been made into a separate function in case of further development
-def nested_command(recognizer, audio_source):
-
-    while True:
-        try:
-            # Trigger recognized, listening to the command
-            say("I'm listening")
-
-            rec_audio = recognizer.listen(audio_source)
-            # say("Okay, just a second..")
-            next_command = recognize_wit(recognizer, rec_audio)
-            print("You: " + next_command.get_text())
-
-            if "stop" in next_command.get_text():
-                say("Have a nice day!")
-                sys.exit()
-            ex.execute(next_command)
-            # command_count += 1
-        except AttributeError:
-            say("I'm sorry, try that again")
 
 
 # Main function. It contains the instance of speech recognition, which handles microphone settings,
