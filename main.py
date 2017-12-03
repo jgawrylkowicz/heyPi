@@ -1,8 +1,7 @@
 import speech_recognition as sr
 from gtts import gTTS
 import os
-import time
-import datetime
+import generate as gen
 
 trigger = "hey"  # catchphrase
 testing = 1  # additional command prints
@@ -10,39 +9,6 @@ testing = 1  # additional command prints
 # saving the last queries / commands for later use
 # We need some kind of dictionary to save entities of the commands.
 # log = dict()
-
-
-# I have split responses into subclasses. I don't know if it's a good idea or not,
-# so you are free to change it.
-
-class Response:
-    # A dictionary is needed for generating responses
-    def __init__(self):
-        self.time_generated = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-
-
-class TimeResponse(Response):
-    def __init__(self, location):
-        Response.__init__(self)
-        self.location = location
-
-    def get_text(self):
-        if self.location is None:
-            now = datetime.datetime.now()
-            return str("It is now " + str(now.hour) + ":" + str(now.minute))
-
-
-class Capture:
-    def __init__(self, text, entities):
-        self.text = text
-        self.entities = entities  # dict
-        self.time_recorded = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-
-    def get_text(self):
-        return self.text
-
-    def get_entities(self):
-        return self.entities
 
 
 # Wit.ai is used for the actual language understanding. Is not only returns transcribed audio, but
@@ -56,7 +22,7 @@ def recognize_wit(recognizer, audio):
         wit_ai_key = "ETJDE6YJR44VJT2X4OGDYOLQGGVIWE65"
         try:
             api_response = recognizer.recognize_wit(audio, key=wit_ai_key, show_all=True)
-            capt = Capture(api_response.get('_text'), api_response.get('entities'))
+            capt = gen.Capture(api_response.get('_text'), api_response.get('entities'))
 
             return capt
 
@@ -75,7 +41,7 @@ def recognize_sphinx(recognizer, audio):
     if audio is not None:
         try:
             api_response = recognizer.recognize_sphinx(audio, language="en-US")
-            capt = Capture(api_response.get('_text'), "")
+            capt = gen.Capture(api_response.get('_text'), "")
 
             return capt
 
@@ -86,15 +52,15 @@ def recognize_sphinx(recognizer, audio):
 
 
 # Provides voice feedback via Google's Text to Speech API.
-# saves the mp3 file into 'resources' dir and plays with mpg321 in cli
+# saves the mp3 file into 'resources' dir and plays with mpg123 in cli
 def say(text):
     if text is not None:
         # TODO check if the response exists as a file
 
         tts = gTTS(text=text, lang="en")
         tts.save("resources/response.mp3")
-        # mpg321 for linux / pi
-        os.system("mpg321 -q resources/response.mp3")
+        # mpg123 for linux / pi
+        os.system("mpg123 -q resources/response.mp3")
         print("HeyPi: " + text)
 
 
@@ -115,7 +81,7 @@ def execute(command):
         keys = entities.keys()
         # example
         if "time" in keys:
-            response = TimeResponse(None)
+            response = gen.TimeResponse(None)
             say(response.get_text())
 
 
