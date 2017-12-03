@@ -119,12 +119,13 @@ def listen_from_source(recognizer, audio_source):
                 print("You: " + command.get_text())
 
                 # After the catchphrase has been recognized, the program awaits a command
-
+                command_count = 0
                 if trigger in command.get_text():
                     while True:
                         try:
                             # Trigger recognized, listening to the command
                             say("I'm listening")
+
 
                             rec_audio = recognizer.listen(audio_source)
                             next_command = recognize_wit(recognizer, rec_audio)
@@ -134,6 +135,7 @@ def listen_from_source(recognizer, audio_source):
                                 say("Have a nice day!")
                                 break
                             execute(next_command)
+                            command_count += 1
                         except AttributeError:
                             say("I'm sorry, try that again")
                 else:
