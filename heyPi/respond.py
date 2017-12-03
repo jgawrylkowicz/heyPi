@@ -3,7 +3,7 @@ import datetime
 import pyowm
 
 
-testing = 1
+testing = 0
 # I have split responses into subclasses. I don't know if it's a good idea or not,
 # so you are free to change it.
 
@@ -12,6 +12,9 @@ class Response:
     # A dictionary is needed for generating responses
     def __init__(self):
         self.time_generated = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
+    def get_text(self):
+        pass
 
 
 class TimeResponse(Response):
@@ -47,6 +50,14 @@ class WeatherResponse(Response):
             self.location = location
 
     def get_text(self):
+
+        # more entries to come
+        def get_status(s):
+            return {
+                "Clouds": "It's cloudy",
+            }.get(s, "")
+
+        response = ""
         # observation = current weather
         # forecast maybe later
         if self.location is not None:
@@ -54,10 +65,13 @@ class WeatherResponse(Response):
             weather = observation.get_weather()
 
             temp = weather.get_temperature("celsius")
-            if testing is 1:
-                print(weather)
+            current_temp = int(round(temp.get("temp")))
+            response += "It is now " + str(current_temp) + " degrees celsius in " + self.location + ". "
 
-            return "It is now " + str(temp.temp) + "degrees celsius in " + self.location
+            status = weather.get_status()
+            response += get_status(status)
+
+            return response
 
 
 class StatusResponse(Response):

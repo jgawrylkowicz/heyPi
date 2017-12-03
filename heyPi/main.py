@@ -85,8 +85,8 @@ def listen_from_source(recognizer, audio_source):
 # It has been made into a separate function in case of further development
 def nested_command(recognizer, audio_source):
 
-    while True:
-        try:
+    # while True:
+    #     try:
             # Trigger recognized, listening to the command
             say("I'm listening")
 
@@ -100,8 +100,8 @@ def nested_command(recognizer, audio_source):
             response = execute(next_command)
             say(response)
             # command_count += 1
-        except AttributeError:
-            say("I'm sorry, try that again")
+        # except AttributeError:
+        #     say("I'm sorry, try that again")
 
 
 # Provides voice feedback via Google's Text to Speech API.
