@@ -93,22 +93,34 @@ def execute(command):
 def listen_from_source(recognizer, audio_source):
     # TODO use background_listening for the commands and the main thread for the catchphrase
 
-    #while 1:
-        # print("Waiting for catchphrase")
-        #
-        # rec_audio = recognizer.listen(audio_source)
-        # command = recognize_sphinx(recognizer, rec_audio)
-        # print("You: " + command)
-
-        # After the catchphrase has been recognized, the program awaits a command
-
-        # if trigger in command:
-            # Trigger recognized, listening to the command
-            say("I'm listening")
+    try:
+        while True:
+            print("Waiting for catchphrase")
 
             rec_audio = recognizer.listen(audio_source)
             command = recognize_wit(recognizer, rec_audio)
-            execute(command)
+            print("You: " + command.get_text())
+
+            # After the catchphrase has been recognized, the program awaits a command
+
+            if trigger in command.get_text():
+                while True:
+
+                    # Trigger recognized, listening to the command
+                    say("I'm listening")
+
+                    rec_audio = recognizer.listen(audio_source)
+                    next_command = recognize_wit(recognizer, rec_audio)
+                    print str(next_command.get_text())
+
+                    if "stop" in next_command.get_text():
+                        break
+                    execute(next_command)
+            else:
+                continue
+            break
+    except AttributeError:
+        say("I'm sorry, try that again")
 
 
 # Main function. It contains the instance of speech recognition, which handles microphone settings,
