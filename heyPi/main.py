@@ -95,7 +95,7 @@ def nested_command(recognizer, audio_source):
             next_command = recognize_wit(recognizer, rec_audio)
 
             if "stop" in next_command.get_text():
-                res.say("Have a nice day!")
+                say("Have a nice day!")
                 sys.exit()
             response = execute(next_command)
             say(response)
