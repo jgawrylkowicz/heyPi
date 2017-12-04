@@ -26,7 +26,6 @@ def recognize_wit(recognizer, audio):
         try:
             api_response = recognizer.recognize_wit(audio, key=wit_ai_key, show_all=True)
             capt = Capture(api_response.get('_text'), api_response.get('entities'))
-
             return capt
 
         except sr.UnknownValueError:

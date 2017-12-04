@@ -54,7 +54,12 @@ class WeatherResponse(Response):
         # more entries to come
         def get_status(s):
             return {
-                "Clouds": "It's cloudy",
+                "Clouds": "The sky is overcast.",
+                "Rain": "It's raining.",
+                "Clear": "The sky is clear.",
+                "Snow": "It's snowing.",
+                "Thunderstorm": "There is a storm outside. Be safe.",
+                "Drizzle": "Watch out for fog and drizzle"
             }.get(s, "")
 
         response = ""
