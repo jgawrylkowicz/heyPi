@@ -1,7 +1,6 @@
 import speech_recognition as sr
 from execute import Capture
 from execute import execute
-import respond as res
 import sys
 from gtts import gTTS
 import os
@@ -107,7 +106,6 @@ def nested_command(recognizer, audio_source):
 # saves the mp3 file into 'resources' dir and plays with mpg123 in cli
 def say(text):
     if text is not None:
-        # TODO check if the response exists as a file
         try:
             tts = gTTS(text=text, lang="en")
             tts.save("../resources/response.mp3")

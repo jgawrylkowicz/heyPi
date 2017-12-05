@@ -4,6 +4,11 @@ import pyowm
 import pytz
 from geopy import geocoders
 from tzwhere import tzwhere
+import urllib2
+import socket
+import itertools
+import os
+import re
 
 
 testing = 0
@@ -101,6 +106,31 @@ class StatusResponse(Response):
 
     def get_text(self):
         # connection to internet, ip address
-        return ""
+        def internet_on():
+            try:
+                # ping google.com
+                urllib2.urlopen('http://216.58.192.142', timeout=1)
+                return 1
+            except urllib2.URLError as err:
+                return 0
 
+        def get_ip():
+            try:
+                hostname = socket.gethostname()
+                ip = socket.gethostbyname(hostname)
+                return "My ip address is " + str(ip)
+            except socket.gaierror as err:
+                return "But I can't determine the ip address"
+
+        response = ""
+
+        if internet_on() is 1:
+            response += "I'm connected to the internet. "
+            response += get_ip()
+        else:
+            # probably never called
+            response += "Sorry, I can't connect to the internet. "
+            response += get_ip()
+
+        return response
 

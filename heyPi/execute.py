@@ -2,7 +2,7 @@ import time
 from respond import Response
 from respond import TimeResponse
 from respond import WeatherResponse
-
+from respond import StatusResponse
 
 testing = 0  # additional command prints
 
@@ -26,7 +26,6 @@ class Capture:
 def execute(command):
 
     print("You: " + command.get_text())
-
     entities = command.get_entities()
 
     if testing is 1:
@@ -46,6 +45,8 @@ def execute(command):
                 response = TimeResponse(None)
             elif "weather" in keys:
                 response = WeatherResponse(None)
+            elif "status" in keys:
+                response = StatusResponse()
 
         elif len(entities) == 2:
             keys = entities.keys()
