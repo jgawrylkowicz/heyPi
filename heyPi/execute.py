@@ -54,7 +54,7 @@ def execute(command):
                 location = command.get_entities().get("location")[0].get("value")
                 response = WeatherResponse(location)
 
-            elif "time" and "location" in keys:
+            if "time" and "location" in keys:
                 location = command.get_entities().get("location")[0].get("value")
                 response = TimeResponse(location)
 

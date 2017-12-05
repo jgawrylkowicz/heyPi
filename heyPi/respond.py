@@ -1,6 +1,9 @@
 import time
 import datetime
 import pyowm
+import pytz
+from geopy import geocoders
+from tzwhere import tzwhere
 
 
 testing = 0
@@ -23,12 +26,25 @@ class TimeResponse(Response):
         self.location = location
 
     def get_text(self):
+
+        def get_location(loc_string):
+            g = geocoders.Nominatim()
+            return g.geocode(loc_string)
+
+        def get_timezone(lat, lng):
+            w = tzwhere.tzwhere()
+            z = w.tzNameAt(lat, lng)
+            tz = pytz.timezone(z)
+            return tz
+
         location = ""
         time = datetime.datetime.now()
 
         if self.location is not None:
             # check for time at location
-            time = datetime.datetime.now()
+            loc = get_location(self.location)
+            tz = get_timezone(loc.latitude, loc.longitude)
+            time = datetime.datetime.now(tz)
             location = " in " + self.location
 
         if time.hour is 0:
