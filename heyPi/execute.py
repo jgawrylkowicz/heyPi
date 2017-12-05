@@ -49,16 +49,13 @@ def execute(command):
 
         elif len(entities) == 2:
             keys = entities.keys()
-        
+
             if "weather" and "location" in keys:
-                # entities["location"]["value"]
-                # location = command.get_entities().get("location").get("value")
-                location = "Vienna"
+                location = command.get_entities().get("location")[0].get("value")
                 response = WeatherResponse(location)
 
             elif "time" and "location" in keys:
-                location = "Vienna"
-                #location = command.get_entities().get("location").get("value")
+                location = command.get_entities().get("location")[0].get("value")
                 response = TimeResponse(location)
 
         return response.get_text()
