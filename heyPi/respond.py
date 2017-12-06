@@ -6,10 +6,6 @@ from geopy import geocoders
 from tzwhere import tzwhere
 import urllib2
 import socket
-import itertools
-import os
-import re
-
 
 testing = 0
 # I have split responses into subclasses. I don't know if it's a good idea or not,

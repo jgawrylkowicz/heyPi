@@ -60,31 +60,28 @@ def recognize_sphinx(recognizer, audio):
 def listen_from_source(recognizer, audio_source):
     # TODO use background_listening for the commands and the main thread for the catchphrase
 
-    # while True:
-    #    # try:
-    #         print("Waiting for catchphrase")
-    #
-    #         rec_audio = recognizer.listen(audio_source)
-    #         command = recognize_wit(recognizer, rec_audio)
-    #         print("You: " + command.get_text())
-    #
-    #         # After the catchphrase has been recognized, the program awaits a command
-    #         #command_count = 0
-    #         if trigger in command.get_text():
-                nested_command(recognizer, audio_source)
-            #else:
-        #        continue
+    while True:
+        try:
+            print("Waiting for catchphrase")
 
-        #except AttributeError:
-          #  say("I'm sorry, try that again")
+            rec_audio = recognizer.listen(audio_source)
+            command = recognize_wit(recognizer, rec_audio)
+            print("You: " + command.get_text())
+            # After the catchphrase has been recognized, the program awaits a command
+            if trigger in command.get_text():
+                nested_command(recognizer, audio_source)
+            else:
+                continue
+        except AttributeError:
+            say("I'm sorry, try that again")
 
 
 # Nested Command is the command said by the user after the catchphrase has been accepted
 # It has been made into a separate function in case of further development
 def nested_command(recognizer, audio_source):
 
-    # while True:
-    #     try:
+    while True:
+        try:
             # Trigger recognized, listening to the command
             say("I'm listening")
 
@@ -97,9 +94,8 @@ def nested_command(recognizer, audio_source):
                 sys.exit()
             response = execute(next_command)
             say(response)
-            # command_count += 1
-        # except AttributeError:
-        #     say("I'm sorry, try that again")
+        except AttributeError:
+            say("I'm sorry, try that again")
 
 
 # Provides voice feedback via Google's Text to Speech API.
