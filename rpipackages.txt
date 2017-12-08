@@ -1,23 +1,42 @@
-portaudio
-python-dev
-python2.7
-SpeechRecognition
-gtts
-pyaudio
-tar
-automake
-gcc-core
-gcc-g++
-gdb
+#usually installed with the linux OS but just in case
+sudo apt-get install gcc-core \
+gcc-g++ \
+gdb \
+wget \
+tar \
+make \
 git
-libao-dev(el)
-libaudio
-libmpfr-devel
-libmpc-devel
-mpg321
-make
-wget
-pyowm
-geopy
-pytz
+
+
+sudo apt-get python-dev \
+python2.7 \
+libasound2-doc
+
+pip --no-cache-dir install SpeechRecognition \
+gtts
+
+
+#for portaudio
+wget "http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz"
+cd /home/pi/Downloads/
+tar zxvf pa_stable_v190600_20161030.tgz
+cd portaudio
+./configure && make
+
+apt-get install python-pyaudio
+pip --no-cache-dir install pyaudio
+
+
+apt-get install portaudio19-dev \
+libao-dev \
+libaudio \
+libmpfr-dev \
+libmpc-dev \
+mpg321 \
+libgeos-dev
+
+
+pip --no-cache-dir  install pyowm \
+geopy \
+pytz \
 tzwhere
