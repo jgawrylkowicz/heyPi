@@ -5,11 +5,12 @@ import sys
 from gtts import gTTS
 import os
 from time import gmtime, strftime
-
+from respond import get_ip
+from respond import internet_on
 from colorama import init as colorama_init
 from termcolor import colored
 
-colorama_init()
+
 
 trigger = "hey"  # catchphrase
 testing = 1  # additional command prints
@@ -23,8 +24,10 @@ testing = 1  # additional command prints
 # but also the intent or keywords of the command, so-called entities, which can be configured on
 # their website.
 # e.g. "What time is it"  Entity:time
-# e.g. "What time is it in Vienna"  Entity:time, location
+# e.g. "What time is it in Vienna" Entity:time, location
 
+
+# TODO need to change the return variables
 def recognize_wit(recognizer, audio):
     if audio is not None:
         wit_ai_key = "ETJDE6YJR44VJT2X4OGDYOLQGGVIWE65"
@@ -124,9 +127,38 @@ def print_ts(text):
     print colored("[" + time + "] ", 'grey') + text
 
 
+def print_config():
+
+    #connected to the internet?
+    print(colored('HeyPi 0.1', 'red'))
+    print(colored('___________________________________', 'grey'))
+    internet = colored('connected', 'green') if internet_on() else colored('disconnected', 'red')
+    print("Internet: " + internet)
+    if internet_on() is 1:
+        ip = get_ip()
+        print("IP: " + ip)
+
+        #connected to wit?
+        audio_file_path = "../resources/test.flac"
+        r = sr.Recognizer()
+        with sr.AudioFile(audio_file_path) as source:
+            audio_file = r.record(source)
+            result = recognize_wit(r, audio_file)
+
+        wit_ai = colored('connected', 'green') if isinstance(result, Capture) else colored('disconnected', 'red')
+        print("Wit.ai: " + wit_ai)
+    else:
+        print(colored("Please connect to the Internet.", 'red'))
+
+    print(colored('___________________________________', 'grey'))
+
+
+
 # Main function. It contains the instance of speech recognition, which handles microphone settings,
 # capturing and transcribing audio.
 def init():
+    colorama_init()
+    print_config()
     rec = sr.Recognizer()
     mic = sr.Microphone()
     with mic as source:
