@@ -4,6 +4,12 @@ from execute import execute
 import sys
 from gtts import gTTS
 import os
+from time import gmtime, strftime
+
+from colorama import init as colorama_init
+from termcolor import colored
+
+colorama_init()
 
 trigger = "hey"  # catchphrase
 testing = 1  # additional command prints
@@ -28,9 +34,9 @@ def recognize_wit(recognizer, audio):
             return capt
 
         except sr.UnknownValueError:
-            print("Wit.ai could not understand audio")
+            print_ts("Wit.ai could not understand audio")
         except sr.RequestError as e:
-            print("Could not request results from Wit.ai service; {0}".format(e))
+            print_ts("Could not request results from Wit.ai service; {0}".format(e))
     else:
         say("Sorry, I didn't catch that")
 
@@ -47,9 +53,9 @@ def recognize_sphinx(recognizer, audio):
             return capt
 
         except sr.UnknownValueError:
-            print("Sphinx could not understand audio")
+            print_ts("Sphinx could not understand audio")
         except sr.RequestError as e:
-            print("Sphinx error; {0}".format(e))
+            print_ts("Sphinx error; {0}".format(e))
 
 
 # Listening to the audio source, the microphone most likely.
@@ -62,18 +68,18 @@ def listen_from_source(recognizer, audio_source):
 
     while True:
         try:
-            print("Waiting for catchphrase")
+            print_ts(colored("Waiting for catchphrase", 'red'))
 
             rec_audio = recognizer.listen(audio_source)
             command = recognize_wit(recognizer, rec_audio)
-            print("You: " + command.get_text())
+            print_ts(colored("You: ", 'blue') + command.get_text())
             # After the catchphrase has been recognized, the program awaits a command
             if trigger in command.get_text():
                 nested_command(recognizer, audio_source)
             else:
                 continue
         except AttributeError:
-            say("I'm sorry, try that again")
+            say(colored("I'm sorry, try that again", 'red'))
 
 
 # Nested Command is the command said by the user after the catchphrase has been accepted
@@ -95,7 +101,7 @@ def nested_command(recognizer, audio_source):
             response = execute(next_command)
             say(response)
         except AttributeError:
-            say("I'm sorry, try that again")
+            say(colored("I'm sorry, try that again", 'red'))
 
 
 # Provides voice feedback via Google's Text to Speech API.
@@ -107,9 +113,15 @@ def say(text):
             tts.save("../resources/response.mp3")
             # mpg123 for linux / pi
             os.system("mpg123 -q ../resources/response.mp3")
-            print("HeyPi: " + text)
+
+            print_ts(colored("HeyPi: ", 'red') + text)
         except IOError:
-            print "The response.mp3 can't be reached: No such file or directory, check the path"
+            print_ts(colored("The response.mp3 can't be reached: No such file or directory, check the path", "red"))
+
+
+def print_ts(text):
+    time = strftime("%H:%M:%S", gmtime())
+    print colored("[" + time + "] ", 'grey') + text
 
 
 # Main function. It contains the instance of speech recognition, which handles microphone settings,

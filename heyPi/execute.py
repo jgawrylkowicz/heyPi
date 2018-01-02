@@ -3,6 +3,11 @@ from respond import Response
 from respond import TimeResponse
 from respond import WeatherResponse
 from respond import StatusResponse
+from time import gmtime, strftime
+from colorama import init as colorama_init
+from termcolor import colored
+
+colorama_init()
 
 testing = 0  # additional command prints
 
@@ -25,14 +30,14 @@ class Capture:
 
 def execute(command):
 
-    print("You: " + command.get_text())
+    print_ts(colored("You: ", 'blue') + command.get_text())
     entities = command.get_entities()
 
     if testing is 1:
-        print(str(entities))
+        print_ts(str(entities))
 
     if len(entities) == 0:
-        return "Sorry, I don't know what you mean with '" + command.get_text() + "'"
+        return colored("Sorry, I don't know what you mean with ", 'red') + "'" + command.get_text() + "'"
 
     else:
         keys = entities.keys()
@@ -61,3 +66,7 @@ def execute(command):
 
         return response.get_text()
 
+
+def print_ts(text):
+    time = strftime("%H:%M:%S", gmtime())
+    print colored("[" + time + "] ", 'grey') + text
