@@ -74,7 +74,11 @@ def listen_from_source(recognizer, audio_source):
             print_ts(colored("Waiting for catchphrase", 'red'))
 
             rec_audio = recognizer.listen(audio_source)
+            print_ts_log("Recognizer created the audio file")
+
             command = recognize_wit(recognizer, rec_audio)
+            print_ts_log("Wit recognized the audio")
+
             print_ts(colored("You: ", 'blue') + command.get_text())
             # After the catchphrase has been recognized, the program awaits a command
             if trigger in command.get_text():
@@ -82,7 +86,7 @@ def listen_from_source(recognizer, audio_source):
             else:
                 continue
         except AttributeError:
-            say(colored("I'm sorry, try that again", 'red'))
+            say("I'm sorry, try that again")
 
 
 # Nested Command is the command said by the user after the catchphrase has been accepted
@@ -95,16 +99,19 @@ def nested_command(recognizer, audio_source):
             say("I'm listening")
 
             rec_audio = recognizer.listen(audio_source)
+            print_ts_log("Recognizer created the audio file")
             # say("Okay, just a second..")
             next_command = recognize_wit(recognizer, rec_audio)
+            print_ts_log("Wit recognized the audio")
 
             if "stop" in next_command.get_text():
                 say("Have a nice day!")
                 sys.exit()
             response = execute(next_command)
+            print_ts_log("Command was executed")
             say(response)
         except AttributeError:
-            say(colored("I'm sorry, try that again", 'red'))
+            say("I'm sorry, try that again")
 
 
 # Provides voice feedback via Google's Text to Speech API.
@@ -125,6 +132,12 @@ def say(text):
 def print_ts(text):
     time = strftime("%H:%M:%S", gmtime())
     print colored("[" + time + "] ", 'grey') + text
+
+
+def print_ts_log(text):
+    if testing is 1:
+        time = strftime("%H:%M:%S", gmtime())
+        print colored("[" + time + "] " + text, 'grey')
 
 
 def print_config():
