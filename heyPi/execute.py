@@ -57,7 +57,7 @@ def execute(command):
 
     else:
         # fallback to generic response
-        response = Response
+        response = Response()
 
         if len(entities) == 1:
 

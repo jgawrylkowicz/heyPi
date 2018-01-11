@@ -1,6 +1,6 @@
 import speech_recognition as sr
-from execute import Capture
-from execute import execute
+import recognize as rec
+from execute import Capture, execute
 import sys
 from gtts import gTTS
 import os
@@ -10,8 +10,6 @@ from respond import internet_on
 from colorama import init as colorama_init
 from termcolor import colored
 
-
-
 trigger = "hey"  # catchphrase
 testing = 1  # additional command prints
 
@@ -19,52 +17,11 @@ testing = 1  # additional command prints
 # We need some kind of dictionary to save entities of the commands.
 # log = dict()
 
-
-# Wit.ai is used for the actual language understanding. Is not only returns transcribed audio, but
-# but also the intent or keywords of the command, so-called entities, which can be configured on
-# their website.
-# e.g. "What time is it"  Entity:time
-# e.g. "What time is it in Vienna" Entity:time, location
-
-
-# TODO need to change the return variables
-def recognize_wit(recognizer, audio):
-    if audio is not None:
-        wit_ai_key = "ETJDE6YJR44VJT2X4OGDYOLQGGVIWE65"
-        try:
-            api_response = recognizer.recognize_wit(audio, key=wit_ai_key, show_all=True)
-            capt = Capture(api_response.get('_text'), api_response.get('entities'))
-            return capt
-
-        except sr.UnknownValueError:
-            print_ts("Wit.ai could not understand audio")
-        except sr.RequestError as e:
-            print_ts("Could not request results from Wit.ai service; {0}".format(e))
-    else:
-        say("Sorry, I didn't catch that")
-
-
-# As mentioned in feedback I have implemented an offline recognition via Sphinx, for the sole
-# purpose to recognize the catchphrase from the audio.
-
-def recognize_sphinx(recognizer, audio):
-    if audio is not None:
-        try:
-            api_response = recognizer.recognize_sphinx(audio, language="en-US")
-            capt = Capture(api_response.get('_text'), "")
-
-            return capt
-
-        except sr.UnknownValueError:
-            print_ts("Sphinx could not understand audio")
-        except sr.RequestError as e:
-            print_ts("Sphinx error; {0}".format(e))
-
-
 # Listening to the audio source, the microphone most likely.
 # The while loop provides an always-on functionality. Use it if you have to.
 # The recognizer instance listens to the microphone and records the audio, which is then sent to one
 # of the API
+
 
 def listen_from_source(recognizer, audio_source):
     # TODO use background_listening for the commands and the main thread for the catchphrase
@@ -101,7 +58,7 @@ def nested_command(recognizer, audio_source):
             rec_audio = recognizer.listen(audio_source)
             print_ts_log("Recognizer created the audio file")
             # say("Okay, just a second..")
-            next_command = recognize_wit(recognizer, rec_audio)
+            next_command = rec.recognize_wit(recognizer, rec_audio)
             print_ts_log("Wit recognized the audio")
 
             if "stop" in next_command.get_text():
@@ -142,7 +99,7 @@ def print_ts_log(text):
 
 def print_config():
 
-    #connected to the internet?
+    # connected to the internet?
     print(colored('HeyPi 0.1', 'red'))
     print(colored('___________________________________', 'grey'))
     internet = colored('connected', 'green') if internet_on() else colored('disconnected', 'red')
@@ -150,14 +107,7 @@ def print_config():
     if internet_on() is 1:
         ip = get_ip()
         print("IP: " + ip)
-
-        #connected to wit?
-        audio_file_path = "../resources/test.flac"
-        r = sr.Recognizer()
-        with sr.AudioFile(audio_file_path) as source:
-            audio_file = r.record(source)
-            result = recognize_wit(r, audio_file)
-
+        result = rec.test_wit()
         wit_ai = colored('connected', 'green') if isinstance(result, Capture) else colored('disconnected', 'red')
         print("Wit.ai: " + wit_ai)
     else:
@@ -166,12 +116,11 @@ def print_config():
     print(colored('___________________________________', 'grey'))
 
 
-
 # Main function. It contains the instance of speech recognition, which handles microphone settings,
 # capturing and transcribing audio.
 def init():
     colorama_init()
-    #print_config()
+    # print_config()
     rec = sr.Recognizer()
     mic = sr.Microphone()
     with mic as source:
