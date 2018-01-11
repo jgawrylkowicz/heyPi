@@ -7,8 +7,24 @@ from time import gmtime, strftime
 from colorama import init as colorama_init
 from termcolor import colored
 
-
 testing = 0  # additional command prints
+
+
+# saves the information about previous commands
+class Reference:
+
+    def __init__(self):
+        self.data = dict()
+
+    def save_location(self, location):
+        if location is not None:
+            if testing is 1:
+                print_ts("Location was saved: " + location)
+            self.data['location'] = location
+
+    def get_location(self):
+        return self.data.get('location')
+
 
 # Executes a 'Command' object. At this time it checks if a command contains a specific
 # string. If no entities have been found by wit.ai, the command cannot be processed.
@@ -57,10 +73,23 @@ def execute(command):
             if all(k in entities for k in ("weather", "location")):
                 location = entities.get("location")[0].get("value")
                 response = WeatherResponse(location)
+                ref.save_location(location)
 
             elif all(k in entities for k in ("time", "location")):
                 location = entities.get("location")[0].get("value")
                 response = TimeResponse(location)
+
+            elif all(k in entities for k in ("weather", "reference")):
+                location = ref.get_location()
+                if location is not None:
+                    response = TimeResponse(location)
+                # else ask for location
+
+            elif all(k in entities for k in ("time", "reference")):
+                location = ref.get_location()
+                if location is not None:
+                    response = TimeResponse(location)
+                # else ask for location
 
         return response.get_text()
 
@@ -71,3 +100,4 @@ def print_ts(text):
 
 
 colorama_init()
+ref = Reference()
