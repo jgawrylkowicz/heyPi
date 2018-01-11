@@ -69,24 +69,24 @@ def recognize_sphinx(recognizer, audio):
 def listen_from_source(recognizer, audio_source):
     # TODO use background_listening for the commands and the main thread for the catchphrase
 
-    while True:
-        try:
-            print_ts(colored("Waiting for catchphrase", 'red'))
-
-            rec_audio = recognizer.listen(audio_source)
-            print_ts_log("Recognizer created the audio file")
-
-            command = recognize_wit(recognizer, rec_audio)
-            print_ts_log("Wit recognized the audio")
-
-            print_ts(colored("You: ", 'blue') + command.get_text())
-            # After the catchphrase has been recognized, the program awaits a command
-            if trigger in command.get_text():
+    # while True:
+    #     try:
+    #         print_ts(colored("Waiting for catchphrase", 'red'))
+    #
+    #         rec_audio = recognizer.listen(audio_source)
+    #         print_ts_log("Recognizer created the audio file")
+    #
+    #         command = recognize_wit(recognizer, rec_audio)
+    #         print_ts_log("Wit recognized the audio")
+    #
+    #         print_ts(colored("You: ", 'blue') + command.get_text())
+    #         # After the catchphrase has been recognized, the program awaits a command
+    #         if trigger in command.get_text():
                 nested_command(recognizer, audio_source)
-            else:
-                continue
-        except AttributeError:
-            say("I'm sorry, try that again")
+        #     else:
+        #         continue
+        # except AttributeError:
+        #     say("I'm sorry, try that again")
 
 
 # Nested Command is the command said by the user after the catchphrase has been accepted
@@ -94,7 +94,7 @@ def listen_from_source(recognizer, audio_source):
 def nested_command(recognizer, audio_source):
 
     while True:
-        try:
+        #try:
             # Trigger recognized, listening to the command
             say("I'm listening")
 
@@ -110,8 +110,8 @@ def nested_command(recognizer, audio_source):
             response = execute(next_command)
             print_ts_log("Command was executed")
             say(response)
-        except AttributeError:
-            say("I'm sorry, try that again")
+       # except AttributeError:
+        #    say("I'm sorry, try that again")
 
 
 # Provides voice feedback via Google's Text to Speech API.
@@ -171,7 +171,7 @@ def print_config():
 # capturing and transcribing audio.
 def init():
     colorama_init()
-    print_config()
+    #print_config()
     rec = sr.Recognizer()
     mic = sr.Microphone()
     with mic as source:

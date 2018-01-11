@@ -7,7 +7,6 @@ from time import gmtime, strftime
 from colorama import init as colorama_init
 from termcolor import colored
 
-colorama_init()
 
 testing = 0  # additional command prints
 
@@ -35,33 +34,32 @@ def execute(command):
 
     if testing is 1:
         print_ts(str(entities))
+        print_ts(str(entities.keys()))
 
     if len(entities) == 0:
-        return colored("Sorry, I don't know what you mean with ", 'red') + "'" + command.get_text() + "'"
+        return "Sorry, I don't know what you mean with " + "'" + command.get_text() + "'"
 
     else:
-        keys = entities.keys()
         # fallback to generic response
         response = Response
 
         if len(entities) == 1:
 
-            if "time" in keys:
+            if "time" in entities:
                 response = TimeResponse(None)
-            elif "weather" in keys:
+            elif "weather" in entities:
                 response = WeatherResponse(None)
-            elif "status" in keys:
+            elif "status" in entities:
                 response = StatusResponse()
 
         elif len(entities) == 2:
-            keys = entities.keys()
 
-            if "weather" and "location" in keys:
-                location = command.get_entities().get("location")[0].get("value")
+            if all(k in entities for k in ("weather", "location")):
+                location = entities.get("location")[0].get("value")
                 response = WeatherResponse(location)
 
-            if "time" and "location" in keys:
-                location = command.get_entities().get("location")[0].get("value")
+            elif all(k in entities for k in ("time", "location")):
+                location = entities.get("location")[0].get("value")
                 response = TimeResponse(location)
 
         return response.get_text()
@@ -70,3 +68,6 @@ def execute(command):
 def print_ts(text):
     time = strftime("%H:%M:%S", gmtime())
     print colored("[" + time + "] ", 'grey') + text
+
+
+colorama_init()
