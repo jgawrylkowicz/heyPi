@@ -1,3 +1,5 @@
+import speech_recognition as sr
+import recognize as rec
 import time
 from respond import Response
 from respond import TimeResponse
@@ -6,6 +8,7 @@ from respond import StatusResponse
 from time import gmtime, strftime
 from colorama import init as colorama_init
 from termcolor import colored
+from voice import say
 
 testing = 0  # additional command prints
 
@@ -43,17 +46,17 @@ class Capture:
         return self.entities
 
 
-def execute(command):
+def execute(capture):
 
-    print_ts(colored("You: ", 'blue') + command.get_text())
-    entities = command.get_entities()
+    print_ts(colored("You: ", 'blue') + capture.get_text())
+    entities = capture.get_entities()
 
     if testing is 1:
         print_ts(str(entities))
         print_ts(str(entities.keys()))
 
     if len(entities) == 0:
-        return "Sorry, I don't know what you mean with " + "'" + command.get_text() + "'"
+        return "Sorry, I don't know what you mean with " + "'" + capture.get_text() + "'"
 
     else:
         # fallback to generic response
@@ -78,20 +81,58 @@ def execute(command):
             elif all(k in entities for k in ("time", "location")):
                 location = entities.get("location")[0].get("value")
                 response = TimeResponse(location)
+                ref.save_location(location)
 
             elif all(k in entities for k in ("weather", "reference")):
                 location = ref.get_location()
                 if location is not None:
-                    response = TimeResponse(location)
-                # else ask for location
+                    response = WeatherResponse(location)
+                else:
+                    if testing is 1:
+                        print_ts("Location unknown")
+                    location = None
+                    say("Where exactly?")
+                    while location is None:
+                        location = nested_execute("location")
+                    response = WeatherResponse(location)
 
             elif all(k in entities for k in ("time", "reference")):
                 location = ref.get_location()
                 if location is not None:
                     response = TimeResponse(location)
-                # else ask for location
+                else:
+                    if testing is 1:
+                        print_ts("Location unknown")
+                    location = None
+                    say("Where exactly?")
+                    while location is None:
+                        location = nested_execute("location")
+                    response = TimeResponse(location)
 
         return response.get_text()
+
+
+def nested_execute(type):
+
+    recognizer = sr.Recognizer()
+    mic = sr.Microphone()
+    with mic as audio_source:
+        rec_audio = recognizer.listen(audio_source)
+        capture = rec.recognize_wit(recognizer, rec_audio)
+
+        print_ts(colored("You: ", 'blue') + capture.get_text())
+        entities = capture.get_entities()
+
+        if testing is 1:
+            print_ts(str(entities))
+            print_ts(str(entities.keys()))
+
+        if len(entities) > 0:
+            if "location" in entities and type:
+                location = entities.get("location")[0].get("value")
+                return location
+        else:
+            return None
 
 
 def print_ts(text):
