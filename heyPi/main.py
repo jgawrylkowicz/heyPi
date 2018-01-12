@@ -72,13 +72,13 @@ def nested_command(recognizer, audio_source):
 
 def print_ts(text):
     time = strftime("%H:%M:%S", gmtime())
-    print colored("[" + time + "] ", 'grey') + text
+    print(colored("[" + time + "] ", 'grey') + text)
 
 
 def print_ts_log(text):
     if testing is 1:
         time = strftime("%H:%M:%S", gmtime())
-        print colored("[" + time + "] " + text, 'grey')
+        print (colored("[" + time + "] " + text, 'grey'))
 
 
 def print_config():

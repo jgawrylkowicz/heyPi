@@ -90,11 +90,10 @@ def execute(capture):
                 else:
                     if testing is 1:
                         print_ts("Location unknown")
-                    location = None
-                    say("Where exactly?")
-                    while location is None:
-                        location = nested_execute("location")
-                    response = WeatherResponse(location)
+
+                    location = nested_execute("location")
+                    if location is not None:
+                        response = WeatherResponse(location)
 
             elif all(k in entities for k in ("time", "reference")):
                 location = ref.get_location()
@@ -103,41 +102,49 @@ def execute(capture):
                 else:
                     if testing is 1:
                         print_ts("Location unknown")
-                    location = None
-                    say("Where exactly?")
-                    while location is None:
-                        location = nested_execute("location")
-                    response = TimeResponse(location)
+
+                    location = nested_execute("location")
+                    if location is not None:
+                        response = TimeResponse(location)
 
         return response.get_text()
 
 
 def nested_execute(type):
 
-    recognizer = sr.Recognizer()
-    mic = sr.Microphone()
-    with mic as audio_source:
-        rec_audio = recognizer.listen(audio_source)
-        capture = rec.recognize_wit(recognizer, rec_audio)
+    num_of_attemps = 3
 
-        print_ts(colored("You: ", 'blue') + capture.get_text())
-        entities = capture.get_entities()
+    for x in range(0, num_of_attemps):
 
-        if testing is 1:
-            print_ts(str(entities))
-            print_ts(str(entities.keys()))
-
-        if len(entities) > 0:
-            if "location" in entities and type:
-                location = entities.get("location")[0].get("value")
-                return location
+        if x is 0:
+            say("Where exactly?")
         else:
-            return None
+            say("Can you repeat?")
+
+        recognizer = sr.Recognizer()
+        mic = sr.Microphone()
+        with mic as audio_source:
+            rec_audio = recognizer.listen(audio_source)
+            capture = rec.recognize_wit(recognizer, rec_audio)
+
+            print_ts(colored("You: ", 'blue') + capture.get_text())
+            entities = capture.get_entities()
+
+            if testing is 1:
+                print_ts(str(entities))
+                print_ts(str(entities.keys()))
+
+            if len(entities) > 0:
+                if "location" in entities and type:
+                    location = entities.get("location")[0].get("value")
+                    return location
+
+    return None
 
 
 def print_ts(text):
     time = strftime("%H:%M:%S", gmtime())
-    print colored("[" + time + "] ", 'grey') + text
+    print(colored("[" + time + "] ", 'grey') + text)
 
 
 colorama_init()
