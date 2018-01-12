@@ -9,6 +9,8 @@ from respond import internet_on
 from colorama import init as colorama_init
 from termcolor import colored
 
+
+
 trigger = "hey"  # catchphrase
 testing = 1  # additional command prints
 
@@ -21,24 +23,21 @@ testing = 1  # additional command prints
 # The recognizer instance listens to the microphone and records the audio, which is then sent to one
 # of the API
 
+def detected_callback():
+    print ("detected")
+
 
 def listen_from_source(recognizer, audio_source):
     # TODO use background_listening for the commands and the main thread for the catchphrase
 
-    # while True:
-    #     try:
-    #         print_ts(colored("Waiting for catchphrase", 'red'))
-    #
-    #         rec_audio = recognizer.listen(audio_source)
-    #         print_ts_log("Recognizer created the audio file")
-    #
-    #         command = recognize_wit(recognizer, rec_audio)
-    #         print_ts_log("Wit recognized the audio")
-    #
-    #         print_ts(colored("You: ", 'blue') + command.get_text())
-    #         # After the catchphrase has been recognized, the program awaits a command
-    #         if trigger in command.get_text():
-                nested_command(recognizer, audio_source)
+    while True:
+       # try:
+        print_ts(colored("Waiting for catchphrase", 'red'))
+
+
+        # After the catchphrase has been recognized, the program awaits a command
+
+        nested_command(recognizer, audio_source)
         #     else:
         #         continue
         # except AttributeError:

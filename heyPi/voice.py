@@ -10,9 +10,9 @@ def say(text):
     if text is not None:
         try:
             tts = gTTS(text=text, lang="en")
-            tts.save("../resources/response.mp3")
+            tts.save("resources/response.mp3")
             # mpg123 for linux / pi
-            os.system("mpg123 -q ../resources/response.mp3")
+            os.system("mpg123 -q resources/response.mp3")
 
             print_ts(colored("HeyPi: ", 'red') + text)
         except IOError:

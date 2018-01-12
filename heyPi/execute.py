@@ -122,6 +122,7 @@ def nested_execute(type):
             say("Can you repeat?")
 
         recognizer = sr.Recognizer()
+        recognizer.pause_threshold = 0.5
         mic = sr.Microphone()
         with mic as audio_source:
             rec_audio = recognizer.listen(audio_source)
