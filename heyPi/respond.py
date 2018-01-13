@@ -119,17 +119,30 @@ class StatusResponse(Response):
         response = ""
 
         if internet_on() is 1:
-            response += "I'm connected to the internet. "
+            response += "I'm connected to the Internet. "
             if get_ip() is not None:
-                response += "My ip address is " + get_ip()
+                response += "My IP address is " + get_ip()
             else:
-                response += "But I can't determine the ip address."
+                response += "But I can't determine the IP address."
         else:
             # probably never called
-            response += "Sorry, I can't connect to the internet. "
+            response += "Sorry, I can't connect to the Internet. "
             response += get_ip()
 
         return response
+
+
+class ConnectionResponse(Response):
+    def __init__(self):
+        Response.__init__(self)
+
+    def get_text(self):
+        # connection to internet
+        if internet_on() is 1:
+            return "Yes, I am connected to the Internet."
+        else:
+            # probably never called
+            return "Sorry, I can't connect to the Internet. "
 
 
 def internet_on():

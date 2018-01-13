@@ -5,6 +5,7 @@ from respond import Response
 from respond import TimeResponse
 from respond import WeatherResponse
 from respond import StatusResponse
+from respond import ConnectionResponse
 from time import gmtime, strftime
 from colorama import init as colorama_init
 from termcolor import colored
@@ -70,6 +71,8 @@ def execute(capture):
                 response = WeatherResponse(None)
             elif "status" in entities:
                 response = StatusResponse()
+            elif "connection" in entities:
+                response = ConnectionResponse()
 
         elif len(entities) == 2:
 
