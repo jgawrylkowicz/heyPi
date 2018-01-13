@@ -1,7 +1,7 @@
 from termcolor import colored
 from gtts import gTTS
-import os
 from time import gmtime, strftime
+from playsound import playsound
 
 
 # Provides voice feedback via Google's Text to Speech API.
@@ -11,8 +11,7 @@ def say(text):
         try:
             tts = gTTS(text=text, lang="en")
             tts.save("resources/response.mp3")
-            # mpg123 for linux / pi
-            os.system("mpg123 -q resources/response.mp3")
+            playsound("resources/response.mp3")
 
             print_ts(colored("HeyPi: ", 'red') + text)
         except IOError:

@@ -1,8 +1,10 @@
 tzwhere==3.0.3
-pytz==2017.3
-pyowm==2.8.0
-gTTS==1.2.2
-SpeechRecognition==3.7.1
-termcolor==1.1.0
 geopy==1.11.0
+termcolor==1.1.0
+playsound==1.2.2
+pyowm==2.7.1
+pytz==2013.7
+gTTS==1.2.2
 colorama==0.3.9
+SpeechRecognition==3.7.1
+pyaudio==0.2.11
