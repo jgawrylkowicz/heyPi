@@ -4,7 +4,7 @@ import pyowm
 import pytz
 from geopy import geocoders
 from tzwhere import tzwhere
-#import urllib2
+import urllib2
 import socket
 
 testing = 0
@@ -48,10 +48,23 @@ class TimeResponse(Response):
             time = datetime.datetime.now(tz)
             location = " in " + self.location
 
+        hour = str(time.hour)
+        minute = str(time.minute)
+
+        if time.minute < 10:
+            minute = "0" + str(time.minute)
+
         if time.hour is 0:
-            return str("It is now " + str(time.minute)) + " minutes after midnight" + location
+            if time.minute is 0:
+                return "It's midnight" + location
+            elif time.minute is 1:
+                return str("It is now " + minute + " minute after midnight" + location)
+            else:
+                return str("It is now " + minute + " minutes after midnight" + location)
+        elif time.minute is 0:
+            return str("It is now " + hour + location)
         else:
-            return str("It is now " + str(time.hour) + ":" + str(time.minute)) + location
+            return str("It is now " + hour + " " + minute + location)
 
 
 class WeatherResponse(Response):
