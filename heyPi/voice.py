@@ -21,5 +21,4 @@ def say(text):
 
 def print_ts(text):
     time = strftime("%H:%M:%S", gmtime())
-    print colored("[" + time + "] ", 'grey') + text
-
+    print(colored("[" + time + "] ", 'grey') + text)

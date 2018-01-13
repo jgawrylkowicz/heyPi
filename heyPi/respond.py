@@ -4,7 +4,7 @@ import pyowm
 import pytz
 from geopy import geocoders
 from tzwhere import tzwhere
-import urllib2
+#import urllib2
 import socket
 
 testing = 0
@@ -135,4 +135,3 @@ def get_ip():
         return ip
     except socket.gaierror as err:
         return None
-
