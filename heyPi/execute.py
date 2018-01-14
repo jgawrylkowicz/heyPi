@@ -1,6 +1,7 @@
 import speech_recognition as sr
 import recognize as rec
 import time
+import datetime
 from respond import Response
 from respond import TimeResponse
 from respond import WeatherResponse
@@ -12,7 +13,8 @@ from termcolor import colored
 from voice import say
 
 testing = 0  # additional command prints
-
+additionalLn = 0 # additional line for user input
+same_day_notes = 0 # same date note helper
 
 # saves the information about previous commands
 class Reference:
@@ -49,69 +51,103 @@ class Capture:
 
 def execute(capture):
 
-    print_ts(colored("You: ", 'blue') + capture.get_text())
+    raw_input = capture.get_text()
+    print_ts(colored("You: ", 'blue') + raw_input)
     entities = capture.get_entities()
+    response = Response()
+   # entitydict(entities, capture)
+
 
     if testing is 1:
         print_ts(str(entities))
         print_ts(str(entities.keys()))
 
-    if len(entities) == 0:
-        return "Sorry, I don't know what you mean with " + "'" + capture.get_text() + "'"
-
+    if additionalLn == 1:  # true when the command requires an additional line from the user
+        create_note(raw_input)
+        #response = NoteResponse()
+        say("Your note has been successfully made.")
     else:
-        # fallback to generic response
-        response = Response()
 
-        if len(entities) == 1:
+        if len(entities) == 0:
+            return "Sorry, I don't know what you mean with " + "'" + capture.get_text() + "'"
 
-            if "time" in entities:
-                response = TimeResponse(None)
-            elif "weather" in entities:
-                response = WeatherResponse(None)
-            elif "status" in entities:
-                response = StatusResponse()
-            elif "connection" in entities:
-                response = ConnectionResponse()
+        else:
+            # fallback to generic response
 
-        elif len(entities) == 2:
+            if len(entities) == 1:
 
-            if all(k in entities for k in ("weather", "location")):
-                location = entities.get("location")[0].get("value")
-                response = WeatherResponse(location)
-                ref.save_location(location)
+                if "time" in entities:
+                    response = TimeResponse(None)
+                elif "weather" in entities:
+                    response = WeatherResponse(None)
+                elif "status" in entities:
+                    response = StatusResponse()
+                elif "connection" in entities:
+                    response = ConnectionResponse()
+                elif "note" in entities:
+                    goAgain()
 
-            elif all(k in entities for k in ("time", "location")):
-                location = entities.get("location")[0].get("value")
-                response = TimeResponse(location)
-                ref.save_location(location)
 
-            elif all(k in entities for k in ("weather", "reference")):
-                location = ref.get_location()
-                if location is not None:
+            elif len(entities) == 2:
+
+                if all(k in entities for k in ("weather", "location")):
+                    location = entities.get("location")[0].get("value")
                     response = WeatherResponse(location)
-                else:
-                    if testing is 1:
-                        print_ts("Location unknown")
+                    ref.save_location(location)
 
-                    location = nested_execute("location")
+                elif all(k in entities for k in ("time", "location")):
+                    location = entities.get("location")[0].get("value")
+                    response = TimeResponse(location)
+                    ref.save_location(location)
+
+                elif all(k in entities for k in ("weather", "reference")):
+                    location = ref.get_location()
                     if location is not None:
                         response = WeatherResponse(location)
+                    else:
+                        if testing is 1:
+                            print_ts("Location unknown")
 
-            elif all(k in entities for k in ("time", "reference")):
-                location = ref.get_location()
-                if location is not None:
-                    response = TimeResponse(location)
-                else:
-                    if testing is 1:
-                        print_ts("Location unknown")
+                        location = nested_execute("location")
+                        if location is not None:
+                            response = WeatherResponse(location)
 
-                    location = nested_execute("location")
+                elif all(k in entities for k in ("time", "reference")):
+                    location = ref.get_location()
                     if location is not None:
                         response = TimeResponse(location)
+                    else:
+                        if testing is 1:
+                            print_ts("Location unknown")
 
-        return response.get_text()
+                        location = nested_execute("location")
+                        if location is not None:
+                            response = TimeResponse(location)
 
+    return response.get_text()
+
+
+def create_note(note_data):
+
+    global additionalLn, same_day_notes
+
+    date = datetime.datetime.now().strftime("%d-%m-%Y")
+    if same_day_notes > 0:
+
+        note = open("Note" + date + "_" + str(same_day_notes) + ".txt", "w")
+    elif same_day_notes == 0:
+        note = open("Note" + date + ".txt", "w")
+
+    note.write(note_data)
+    note.close()
+    same_day_notes += 1
+    additionalLn = 0
+    return
+
+def goAgain():
+    global additionalLn
+    additionalLn = 1
+    return None
 
 def nested_execute(type):
 

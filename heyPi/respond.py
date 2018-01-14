@@ -11,7 +11,6 @@ testing = 0
 # I have split responses into subclasses. I don't know if it's a good idea or not,
 # so you are free to change it.
 
-
 class Response:
     # A dictionary is needed for generating responses
     def __init__(self):
@@ -144,6 +143,14 @@ class ConnectionResponse(Response):
             # probably never called
             return "Sorry, I can't connect to the Internet. "
 
+#
+# class NoteResponse(Response):
+#     def __init__(self):
+#         Response.__init__(self)
+#
+#     def get_text(self):
+# #TO-DO IOERROR WHEN NOTE ISNT MADE
+#        return "Your note has been successfully made."
 
 def internet_on():
     try:
