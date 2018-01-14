@@ -135,7 +135,7 @@ def create_note(recognizer, mic):
         note_data = capture.get_text()
         print_ts(colored("You: ", 'blue') + note_data)
 
-        date = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+        date = datetime.datetime.now().strftime("%d-%m-%Y_%H_%M_%S")
 
         try:
             note = open("notes/note" + date + ".txt", "w")
@@ -143,6 +143,7 @@ def create_note(recognizer, mic):
             note.close()
             return note.name
         except IOError:
+            say("An error occured whilst saving the note. Try again.")
             return None
 
 
