@@ -15,7 +15,6 @@ from voice import say
 from playsound import playsound
 
 testing = 0  # additional command prints
-same_day_notes = 0 # same date note helper
 
 
 # saves the information about previous commands
@@ -124,17 +123,11 @@ def execute(capture):
     return response.get_text()
 
 
-def create_note():
+def create_note(recognizer, mic):
 
-    global same_day_notes
-
-    say("Ok, I'm listening to your note.")
-    playsound('resources/ding.wav')
-
-    recognizer = sr.Recognizer()
-    recognizer.pause_threshold = 0.5
-    mic = sr.Microphone()
     with mic as audio_source:
+        say("Ok, I'm listening to your note.")
+        playsound('resources/ding.wav')
         rec_audio = recognizer.listen(audio_source)
         playsound('resources/dong.wav')
         capture = rec.recognize_wit(recognizer, rec_audio)
@@ -148,28 +141,23 @@ def create_note():
             note = open("notes/note" + date + ".txt", "w")
             note.write(note_data)
             note.close()
-            same_day_notes += 1
-            # additionalLn = 0
             return note.name
         except IOError:
             return None
 
 
-def ask_for_location():
+def ask_for_location(recognizer, mic):
 
-    num_of_attemps = 3
+    num_of_attempts = 3
 
-    for x in range(0, num_of_attemps):
+    with mic as audio_source:
+        for x in range(0, num_of_attempts):
 
-        if x is 0:
-            say("Where exactly?")
-        else:
-            say("Can you repeat?")
+            if x is 0:
+                say("Where exactly?")
+            else:
+                say("Can you repeat?")
 
-        recognizer = sr.Recognizer()
-        recognizer.pause_threshold = 0.5
-        mic = sr.Microphone()
-        with mic as audio_source:
             rec_audio = recognizer.listen(audio_source)
             playsound('resources/dong.wav')
             capture = rec.recognize_wit(recognizer, rec_audio)
@@ -191,13 +179,15 @@ def ask_for_location():
 
 def nested_execute(type):
 
-    # TODO recognizer instance here and mic source
+    recognizer = sr.Recognizer()
+    recognizer.pause_threshold = 0.5
+    mic = sr.Microphone()
 
     if type is "note":
-        return create_note()
+        return create_note(recognizer, mic)
 
     elif type is "location":
-        return ask_for_location()
+        return ask_for_location(recognizer, mic)
 
     return None
 
