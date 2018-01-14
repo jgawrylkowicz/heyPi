@@ -19,10 +19,11 @@ same_day_notes = 0 # same date note helper
 
 
 # saves the information about previous commands
-class Reference:
+class Memory:
 
     def __init__(self):
         self.data = dict()
+        # save the dict locally
 
     def save_location(self, location):
         if location is not None:
@@ -82,21 +83,22 @@ def execute(capture):
                 note_name = nested_execute("note")
                 if note_name is not None:
                     response = NoteResponse(note_name)
+                    # save the name of the of the note to the memory
 
         elif len(entities) == 2:
 
             if all(k in entities for k in ("weather", "location")):
                 location = entities.get("location")[0].get("value")
                 response = WeatherResponse(location)
-                ref.save_location(location)
+                mem.save_location(location)
 
             elif all(k in entities for k in ("time", "location")):
                 location = entities.get("location")[0].get("value")
                 response = TimeResponse(location)
-                ref.save_location(location)
+                mem.save_location(location)
 
             elif all(k in entities for k in ("weather", "reference")):
-                location = ref.get_location()
+                location = mem.get_location()
                 if location is not None:
                     response = WeatherResponse(location)
                 else:
@@ -108,7 +110,7 @@ def execute(capture):
                         response = WeatherResponse(location)
 
             elif all(k in entities for k in ("time", "reference")):
-                location = ref.get_location()
+                location = mem.get_location()
                 if location is not None:
                     response = TimeResponse(location)
                 else:
@@ -140,19 +142,17 @@ def create_note():
         note_data = capture.get_text()
         print_ts(colored("You: ", 'blue') + note_data)
 
-        date = datetime.datetime.now().strftime("%d-%m-%Y")
+        date = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
 
-        # add IOERROR try and catch
-        if same_day_notes > 0:
-            note = open("note" + date + "_" + str(same_day_notes) + ".txt", "w")
-        elif same_day_notes == 0:
-            note = open("note" + date + ".txt", "w")
-
-        note.write(note_data)
-        note.close()
-        same_day_notes += 1
-        # additionalLn = 0
-        return note.name
+        try:
+            note = open("notes/note" + date + ".txt", "w")
+            note.write(note_data)
+            note.close()
+            same_day_notes += 1
+            # additionalLn = 0
+            return note.name
+        except IOError:
+            return None
 
 
 def ask_for_location():
@@ -171,6 +171,7 @@ def ask_for_location():
         mic = sr.Microphone()
         with mic as audio_source:
             rec_audio = recognizer.listen(audio_source)
+            playsound('resources/dong.wav')
             capture = rec.recognize_wit(recognizer, rec_audio)
 
             print_ts(colored("You: ", 'blue') + capture.get_text())
@@ -207,4 +208,4 @@ def print_ts(text):
 
 
 colorama_init()
-ref = Reference()
+mem = Memory()
