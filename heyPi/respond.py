@@ -7,6 +7,7 @@ from tzwhere import tzwhere
 import urllib2
 import socket
 
+
 testing = 0
 # I have split responses into subclasses. I don't know if it's a good idea or not,
 # so you are free to change it.
@@ -143,14 +144,18 @@ class ConnectionResponse(Response):
             # probably never called
             return "Sorry, I can't connect to the Internet. "
 
-#
-# class NoteResponse(Response):
-#     def __init__(self):
-#         Response.__init__(self)
-#
-#     def get_text(self):
-# #TO-DO IOERROR WHEN NOTE ISNT MADE
-#        return "Your note has been successfully made."
+
+class NoteResponse(Response):
+    def __init__(self, note_name):
+        Response.__init__(self)
+        self.note_name = note_name
+
+    def get_text(self):
+        if self.note_name is not None:
+            return "Your note has been successfully made."
+        else:
+            return "Your note has not been save. Please try again."
+
 
 def internet_on():
     try:
