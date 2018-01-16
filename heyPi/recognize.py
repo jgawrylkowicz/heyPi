@@ -42,7 +42,8 @@ def recognize_sphinx(recognizer, audio):
 
 
 def test_wit():
-    audio_file_path = "../resources/test.flac"
+    # TODO IOERROR
+    audio_file_path = "resources/test.flac"
     r = sr.Recognizer()
     with sr.AudioFile(audio_file_path) as source:
         audio_file = r.record(source)

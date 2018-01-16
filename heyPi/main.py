@@ -10,7 +10,7 @@ from termcolor import colored
 from playsound import playsound
 
 trigger = "hey"  # catchphrase
-testing = 1  # additional command prints
+testing = 0  # additional command prints
 
 # Listening to the audio source, the microphone most likely.
 # The while loop provides an always-on functionality. Use it if you have to.
@@ -49,6 +49,7 @@ def nested_command():
             mic = sr.Microphone()
             with mic as source:
                 rec_audio = recognizer.listen(source)
+                playsound('resources/dong.wav')
                 print_ts_log("Recognizer created the audio file")
                 # say("Okay, just a second..")
                 next_command = rec.recognize_wit(recognizer, rec_audio)
@@ -97,6 +98,6 @@ def print_config():
 # capturing and transcribing audio.
 
 colorama_init()
-# print_config()
+print_config()
 listen_from_source()
 

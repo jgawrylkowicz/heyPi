@@ -143,7 +143,7 @@ def create_note(recognizer, mic):
             note.close()
             return note.name
         except IOError:
-            say("An error occured whilst saving the note. Try again.")
+            #say("An error occured whilst saving the note. Try again.")
             return None
 
 
@@ -158,7 +158,7 @@ def ask_for_location(recognizer, mic):
                 say("Where exactly?")
             else:
                 say("Can you repeat?")
-
+            playsound('resources/ding.wav')
             rec_audio = recognizer.listen(audio_source)
             playsound('resources/dong.wav')
             capture = rec.recognize_wit(recognizer, rec_audio)

@@ -154,7 +154,7 @@ class NoteResponse(Response):
         if self.note_name is not None:
             return "Your note has been successfully made."
         else:
-            return "Your note has not been save. Please try again."
+            return "Your note hasn't been saved. Please try again."
 
 
 def internet_on():
