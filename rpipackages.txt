@@ -39,4 +39,6 @@ libgeos-dev
 pip --no-cache-dir  install pyowm \
 geopy \
 pytz \
-tzwhere
+tzwhere \
+python-gobject \
+gi

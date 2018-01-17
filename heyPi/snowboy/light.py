@@ -1,40 +1,54 @@
-import RPi.GPIO as GPIO
 import time
+import RPi.GPIO as IO
+
+
 
 class Light(object):
-    def __init__(self, port):
-        self.port = port
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.port, GPIO.OUT)
-        self.on_state = GPIO.HIGH
-        self.off_state = not self.on_state
+	def __init__(self, port):
+		self.port = port
+		IO.setwarnings(False)
+		IO.setmode(IO.BCM)
+		IO.setup(self.port, IO.OUT)
+		self.on = IO.HIGH
+		self.off = IO.LOW
 
-    def set_on(self):
-        GPIO.output(self.port, self.on_state)
+	def turn_on(self):
+		IO.output(self.port, self.on)
 
-    def set_off(self):
-        GPIO.output(self.port, self.off_state)
+	def turn_off(self):
+		IO.output(self.port, self.off)
 
-    def is_on(self):
-        return GPIO.input(self.port) == self.on_state
+	def is_on(self):
+		return IO.input(self.port) == self.on
 
-    def is_off(self):
-        return GPIO.input(self.port) == self.off_state
+	def is_off(self):
+		return IO.input(self.port) == self.off
 
-    def toggle(self):
-        if self.is_on():
-            self.set_off()
-        else:
-            self.set_on()
+	def party(self, t=0.5):
 
-    def blink(self, t=0.3):
-        self.set_off()
-        self.set_on()
-        time.sleep(t)
-        self.set_off()
+		#while True:
+		IO.output(self.port, self.on)
+		time.sleep(t)
+		IO.output(self.port, self.off)
+		time.sleep(t)
+		IO.output(self.port, self.on)
+		time.sleep(t)
+		IO.output(self.port, self.off)
+		time.sleep(t)
+		IO.output(self.port, self.on)
+		time.sleep(t)
+		IO.output(self.port, self.off)
+		time.sleep(t)
+
+	def switch(self):
+		if self.is_on():
+			self.turn_off()
+		else:
+			self.turn_on()
+
 
 if __name__ == "__main__":
-    light = Light(17)
-    while True:
-        light.blink()
-        time.sleep(0.7)
+	light = Light(18)
+	while True:
+		light.party()
+		time.sleep(0.5)
