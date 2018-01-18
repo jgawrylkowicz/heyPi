@@ -47,7 +47,7 @@ except NameError:
     pass  # Python < 2.2 doesn't have 'property'.
 
 try:
-    import builtins as __builtin__
+    import __builtin__ as __builtin__
 except ImportError:
     import __builtin__
 
