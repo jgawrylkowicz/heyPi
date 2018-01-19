@@ -41,7 +41,7 @@ def listen_from_source():
 def nested_command():
 
     while True:
-        try:
+        #try:
             # Trigger recognized, listening to the command
             # say("I'm listening")
             playsound('resources/ding.wav')
@@ -61,8 +61,8 @@ def nested_command():
                 response = execute(next_command)
                 print_ts_log("Command was executed")
                 say(response)
-        except AttributeError:
-            say("I'm sorry, try that again")
+        #except AttributeError:
+           # say("I'm sorry, try that again")
 
 
 def print_ts(text):
@@ -98,6 +98,6 @@ def print_config():
 # capturing and transcribing audio.
 
 colorama_init()
-print_config()
+#print_config()
 listen_from_source()
 

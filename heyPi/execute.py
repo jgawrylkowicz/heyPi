@@ -51,12 +51,22 @@ class Capture:
         return self.entities
 
 
+def filter_by_confidence(entities):
+    if entities is not None:
+        for key, values in entities.items():
+            if values[0].get("confidence") <= 0.8:
+                entities.pop(key, None)
+
+
 def execute(capture):
 
     raw_input = capture.get_text()
     print_ts(colored("You: ", 'blue') + raw_input)
     entities = capture.get_entities()
     response = Response()
+
+    # filter_by_confidence(entities)
+    # not tested, don't use it
 
     if testing is 1:
         print_ts(str(entities))
@@ -84,7 +94,7 @@ def execute(capture):
                     response = NoteResponse(note_name)
                     # save the name of the of the note to the memory
 
-        elif len(entities) == 2:
+        elif len(entities) >= 2:
 
             if all(k in entities for k in ("weather", "location")):
                 location = entities.get("location")[0].get("value")
