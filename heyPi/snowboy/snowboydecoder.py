@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 
 import collections
@@ -7,6 +8,7 @@ import time
 import wave
 import os
 import logging
+import random
 
 logging.basicConfig()
 logger = logging.getLogger("snowboy")
@@ -16,6 +18,8 @@ TOP_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCE_FILE = os.path.join(TOP_DIR, "resources/common.res")
 DETECT_DING = os.path.join(TOP_DIR, "resources/ding.wav")
 DETECT_DONG = os.path.join(TOP_DIR, "resources/dong.wav")
+RIGHT_DIR = "/home/pi/SS1/heyPi/resources/music"
+RANDOM_SONG = os.path.join(RIGHT_DIR, random.choice(os.listdir("music")))
 
 
 class RingBuffer(object):
@@ -41,13 +45,16 @@ def play_audio_file(fname=DETECT_DING):
     :param str fname: wave file name
     :return: None
     """
+
     ding_wav = wave.open(fname, 'rb')
     ding_data = ding_wav.readframes(ding_wav.getnframes())
     audio = pyaudio.PyAudio()
     stream_out = audio.open(
         format=audio.get_format_from_width(ding_wav.getsampwidth()),
         channels=ding_wav.getnchannels(),
-        rate=ding_wav.getframerate(), input=False, output=True)
+        rate=44100,
+	frames_per_buffer=8000,
+	input=False, output=True)
     stream_out.start_stream()
     stream_out.write(ding_data)
     time.sleep(0.2)
