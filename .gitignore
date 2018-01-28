@@ -240,3 +240,5 @@ $RECYCLE.BIN/
 *.mp3
 
 # End of https://www.gitignore.io/api/macos,linux,python,windows,pycharm
+
+heyPi/resources/music
