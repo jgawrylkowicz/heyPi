@@ -28,6 +28,7 @@ def listen_from_source():
             # performance hit
             recognizer.adjust_for_ambient_noise(source)
             recognizer.pause_threshold = 0.8
+            recognizer.energy_threshold = 3000
             print_ts(colored("Waiting for catchphrase", 'red'))
 
             snowboy_config = ('snowboy', 'resources/heypi.pmdl')
@@ -48,6 +49,8 @@ def nested_command():
             recognizer = sr.Recognizer()
             mic = sr.Microphone()
             with mic as source:
+                recognizer.pause_threshold = 0.8
+                recognizer.energy_threshold = 3000
                 rec_audio = recognizer.listen(source)
                 playsound('resources/dong.wav')
                 print_ts_log("Recognizer created the audio file")

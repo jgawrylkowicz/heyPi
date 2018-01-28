@@ -193,6 +193,7 @@ def nested_execute(type):
     recognizer = sr.Recognizer()
     recognizer.pause_threshold = 0.5
     mic = sr.Microphone()
+    recognizer.energy_threshold = 3000
 
     if type is "note":
         return create_note(recognizer, mic)
