@@ -58,4 +58,5 @@ From there the Snowboy listener will be triggered by three hotwords:
 
 ## Screenshots
 
-
+![alt text](https://github.com/jgawrylkowicz/heyPi/blob/final/img/1.png "1")
+![alt text](https://github.com/jgawrylkowicz/heyPi/blob/final/img/2.png "2")
